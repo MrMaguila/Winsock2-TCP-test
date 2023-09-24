@@ -60,13 +60,17 @@ int main() {
 	{
 		connection_fd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
 				
-		if ((connect(connection_fd, addr->ai_addr, (int)addr->ai_addrlen)) == -1)
+		if ((connect(connection_fd, addr->ai_addr, (int)addr->ai_addrlen)) != -1)
 		{
-			printf("Error connecting to server\n");
-			return -1;
+			printf("Successfully conected\n");
+			break;
 		}
 
-		printf("Successfully conected\n");
+		#ifdef _WIN32
+			closesocket(connection_fd);
+		#else
+			close(connection_fd);
+		#endif
 	}
 
 	freeaddrinfo(server_info);
@@ -97,6 +101,12 @@ int main() {
 		return -1;
 	}
 	
+
+	#ifdef _WIN32
+		closesocket(connection_fd);
+	#else
+		close(connection_fd);
+	#endif
 
 	printf("Press any key to exit");
 	char ch;
